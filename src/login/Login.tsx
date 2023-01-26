@@ -1,3 +1,4 @@
+import { Button, Input } from "antd";
 import * as React from "react";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
 const Login: React.FC<Props> = () => {
     return <>
         <form action="">
-            <input type="password" />
+            <Input.Password />
         </form>
     </>;
 }
