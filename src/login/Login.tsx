@@ -4,8 +4,7 @@ import { SmileOutlined } from '@ant-design/icons';
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-
-const Login = () => {
+const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
     function handleLogin(password: string) {
@@ -24,7 +23,6 @@ const Login = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in 
-                const user = userCredential.user;
                 messageApi.success("Success!");
             })
             .catch((error) => {

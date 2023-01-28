@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import type { FC } from 'react';
-import 'antd/dist/reset.css';
-import { useIdToken } from 'react-firebase-hooks/auth';
-import './App.css';
-import Login from './login/Login';
 import { Route, Routes, Navigate } from "react-router-dom";
-import { message } from 'antd';
-import Home from './components/Home';
+import { useIdToken } from 'react-firebase-hooks/auth';
+import { useEffect, useState } from 'react';
+import type { FC } from 'react';
 import { auth } from "./firebase";
-import NavBar from './navbar/NavBar';
+import Login from './login/Login';
+import Home from './components/Home';
 import AddNotes from './components/AddNote';
 import Notes from './components/Notes';
+import NavBar from './navbar/NavBar';
+import 'antd/dist/reset.css';
+import './App.css';
 
 const App: FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-  const [user, loading, error] = useIdToken(auth);
+  const [user] = useIdToken(auth);
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
@@ -27,10 +25,8 @@ const App: FC = () => {
 
   return (
     <>
-      {contextHolder}
       <div className="App">
         {isAuth && <NavBar />}
-        {/* {loading && <Spin tip="Loading" size="large" />} */}
         <Routes>
           <Route path="/" element={isAuth ? <Notes /> : <Login />} />
           {isAuth && <>
