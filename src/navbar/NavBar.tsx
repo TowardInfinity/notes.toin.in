@@ -1,17 +1,19 @@
 import React, { useCallback } from "react";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
-import { Layout, Menu, message, Spin } from 'antd';
+import { Menu, message, Popconfirm } from 'antd';
 import type { MenuProps } from 'antd';
 import { useIdToken } from 'react-firebase-hooks/auth';
 import {
     BookOutlined, FileAddOutlined, LogoutOutlined
 } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 
 const NavBar: React.FC = () => {
     const [user, loading, error] = useIdToken(auth);
     const [messageApi, contextHolder] = message.useMessage();
     const [current, setCurrent] = React.useState<string>('notes');
+    const navigate = useNavigate();
 
     const handleSignOut = useCallback(() => {
         signOut(auth).then(result => {
@@ -26,8 +28,10 @@ const NavBar: React.FC = () => {
     }
 
     const onClick: MenuProps['onClick'] = (e) => {
-        console.log('click ', e);
         setCurrent(e.key);
+        if (e.key !== 'logout') {
+            navigate(e.key);
+        }
     };
 
     const items: MenuProps['items'] = [
@@ -43,7 +47,7 @@ const NavBar: React.FC = () => {
             disabled: false,
         },
         {
-            label: (<a style={{float: 'right'}} onClick={handleSignOut}>Logout</a>),
+            label: (<a href="/" onClick={handleSignOut}>Logout</a>),
             key: 'logout',
             icon: <LogoutOutlined />,
             disabled: false,

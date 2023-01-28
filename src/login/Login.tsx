@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Input, notification, message } from 'antd';
-import { UserOutlined, SmileOutlined } from '@ant-design/icons';
+import { SmileOutlined } from '@ant-design/icons';
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from 'react-router-dom';
 
 
 const Login = () => {
     const [messageApi, contextHolder] = message.useMessage();
-    const navigate = useNavigate();
 
     function handleLogin(password: string) {
         const email: string | undefined = process.env.REACT_APP_EMAIL;
@@ -27,9 +25,7 @@ const Login = () => {
             .then((userCredential) => {
                 // Signed in 
                 const user = userCredential.user;
-                console.log(user);
                 messageApi.success("Success!");
-                // navigate("/home");
             })
             .catch((error) => {
                 onFinishFailed(error);
@@ -37,12 +33,10 @@ const Login = () => {
     }
 
     const onFinish = (values: any) => {
-        console.log('Password:', values.password);
         handleLogin(values.password);
     };
 
     const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
         const errorMessage = errorInfo.message;
         messageApi.warning(errorMessage);
     };
