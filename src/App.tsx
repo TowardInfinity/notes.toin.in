@@ -6,8 +6,9 @@ import './App.css';
 import Login from './login/Login';
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Alert, Space, Spin } from 'antd';
-import Home from './Home';
+import Home from './components/Home';
 import { auth } from "./firebase";
+import NavBar from './navbar/NavBar';
 
 const App: FC = () => {
   const [user, loading, error] = useIdToken(auth);
@@ -24,6 +25,7 @@ const App: FC = () => {
 
   return (
     <div className="App">
+      {isAuth && <NavBar />}
       {/* {loading && <Spin tip="Loading" size="large" />} */}
       <Routes>
         <Route path="/" element={isAuth ? <Home /> : <Login />} />

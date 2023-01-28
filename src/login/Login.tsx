@@ -29,7 +29,7 @@ const Login = () => {
                 const user = userCredential.user;
                 console.log(user);
                 messageApi.success("Success!");
-                navigate("/home");
+                // navigate("/home");
             })
             .catch((error) => {
                 onFinishFailed(error);
@@ -50,7 +50,7 @@ const Login = () => {
     return (
         <>
             {contextHolder}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'black' }}>
                 <Form
                     name="basic"
                     labelCol={{ span: 8 }}
