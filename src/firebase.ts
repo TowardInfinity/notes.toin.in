@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -10,6 +11,7 @@ import { getAuth } from 'firebase/auth';
 const firebaseConfig = {
     apiKey: "AIzaSyCMF3KEZuv9ybwoVtRN7CXzMUQ1ppWmCCk",
     authDomain: "toin-notes.firebaseapp.com",
+    databaseURL: "https://toin-notes-default-rtdb.asia-southeast1.firebasedatabase.app/",
     projectId: "toin-notes",
     storageBucket: "toin-notes.appspot.com",
     messagingSenderId: "81961763470",
@@ -19,5 +21,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
 const analytics = getAnalytics(app);
+export const auth = getAuth(app);
+export const database = getDatabase(app);
