@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Form, Input, notification, message } from 'antd';
 import { SmileOutlined } from '@ant-design/icons';
 import { auth } from "../firebase";
@@ -7,7 +7,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
-    function handleLogin(password: string) {
+    const handleLogin = useCallback((password: string) => {
         const email: string | undefined = process.env.REACT_APP_EMAIL;
 
         if (!email) {
@@ -28,7 +28,7 @@ const Login: React.FC = () => {
             .catch((error) => {
                 onFinishFailed(error);
             });
-    }
+    }, []);
 
     const onFinish = (values: any) => {
         handleLogin(values.password);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { Menu, message } from 'antd';
@@ -10,22 +10,18 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const NavBar: React.FC = () => {
-    const [error] = useIdToken(auth);
+    const [user, error, loading] = useIdToken(auth);
     const [messageApi, contextHolder] = message.useMessage();
     const [current, setCurrent] = React.useState<string>('notes');
     const navigate = useNavigate();
 
-    const handleSignOut = () => {
+    const handleSignOut = useCallback(() => {
         signOut(auth).then(result => {
             messageApi.success("Logged Out!");
         }).catch(error => {
             messageApi.error('SignOut Failed!');
         });
-    };
-
-    if (error) {
-        handleSignOut();
-    }
+    }, []);
 
     const onClick: MenuProps['onClick'] = (e) => {
         setCurrent(e.key);
