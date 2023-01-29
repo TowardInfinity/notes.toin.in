@@ -1,11 +1,11 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin } from "antd";
-import { LoadingOutlined } from '@ant-design/icons';
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm } from "antd";
+import { LoadingOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
 import { noteConverter } from "../utils/helper";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -53,6 +53,22 @@ const Notes: React.FC = () => {
             })
     };
 
+    const handleDelete = useCallback(
+        (id: string | undefined) => {
+            if (id) {
+                deleteDoc(doc(firestore, "notes", id))
+                    .then(res => {
+                        messageApi.success("Removed!");
+                    })
+                    .catch(err => {
+                        messageApi.success(`[Error] ${err}`);
+                    });
+            }
+        },
+        [],
+    );
+
+
     if (loading) {
         return <Spin indicator={antIcon} className="spinner" size="large" />;
     }
@@ -63,7 +79,18 @@ const Notes: React.FC = () => {
             <div className="site-card-border-less-wrapper card-container">
                 {notes?.map((note: NoteType) => {
                     return (<Card title={new Date(Number(note.title)).toLocaleString()}
-                        bordered={false} className="card" key={note.ref?.id}>
+                        bordered={false} className="card" key={note.ref?.id}
+                        extra={
+                            <Popconfirm
+                                title="Delete the note"
+                                description="Are you sure to delete this note?"
+                                okText="Yes"
+                                cancelText="No"
+                                onConfirm={() => handleDelete(note.ref?.id)}
+                            >
+                                <DeleteOutlined />
+                            </Popconfirm>
+                        }>
                         <p className="card-description">{note.body}</p>
                     </Card>);
                 })}
