@@ -1,7 +1,7 @@
 import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
@@ -53,9 +53,13 @@ const Notes: React.FC = () => {
             })
     };
 
+    if (loading) {
+        return <Spin indicator={antIcon} className="spinner" size="large" />;
+    }
+
     return (<>
         {contextHolder}
-        {!loading ?
+        {!loading &&
             <div className="site-card-border-less-wrapper card-container">
                 {notes?.map((note: NoteType) => {
                     return (<Card title={new Date(Number(note.title)).toLocaleString()}
@@ -63,7 +67,7 @@ const Notes: React.FC = () => {
                         <p className="card-description">{note.body}</p>
                     </Card>);
                 })}
-            </div> : <Spin indicator={antIcon} />
+            </div>
         }
         <FloatButton onClick={openQuickNoteDrawer} />
         <Drawer
