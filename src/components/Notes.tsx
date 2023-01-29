@@ -1,16 +1,21 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin } from "antd";
+import { LoadingOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
-import React, { useCallback, useState } from "react";
-import { useList } from 'react-firebase-hooks/database';
-import { ref, set } from 'firebase/database';
-import { database } from "../firebase";
-import { QuickNoteType } from "../utils/types";
+import React, { useCallback, useEffect, useState } from "react";
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { firestore } from "../firebase";
+import { NoteType } from "../utils/types";
+import { addDoc, collection } from 'firebase/firestore';
+import { noteConverter } from "../utils/helper";
+
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const Notes: React.FC = () => {
     const [openQuickNote, setOpenQuickNote] = useState<boolean>(false);
     const [quickNote, setQuickNote] = useState<string>('');
-    const [snapshots, loading, error] = useList(ref(database, 'quick-notes'));
+    const notesRef = collection(firestore, 'notes').withConverter(noteConverter);
     const [messageApi, contextHolder] = message.useMessage();
+    const [notes, loading, error] = useCollectionData(notesRef);
 
     const openQuickNoteDrawer = () => {
         setOpenQuickNote(true);
@@ -31,26 +36,34 @@ const Notes: React.FC = () => {
         saveQuickNote();
     };
 
-    const saveQuickNote = useCallback(() => {
+    const saveQuickNote = async () => {
         const now: number = Date.now();
-        const note: QuickNoteType = {
+        const note: NoteType = {
+            id: String(now),
             title: String(now),
-            note: quickNote
+            body: quickNote
         };
-        set(ref(database, `quick-notes/${now}`), note)
-            .then(result => {
-                messageApi.success("Added!");
+
+        addDoc(collection(firestore, 'notes'), { note })
+            .then(res => {
                 setQuickNote('');
-            }).catch(error => {
-                messageApi.error("[Error] " + error);
-            });
-    },
-        [quickNote],
-    );
+                messageApi.success("Added!");
+            }).catch(err => {
+                messageApi.success(`[Error] ${err}`);
+            })
+    };
 
     return (<>
         {contextHolder}
-        <h1>Notes</h1>
+        {!loading ?
+            <div className="site-card-border-less-wrapper card-container">
+                {notes?.map((note: NoteType) => {
+                    return (<Card title={note.title} bordered={false} className="card">
+                        <p className="card-description">{note.body}</p>
+                    </Card>);
+                })}
+            </div> : <Spin indicator={antIcon} />
+        }
         <FloatButton onClick={openQuickNoteDrawer} />
         <Drawer
             title="Quick Note"
