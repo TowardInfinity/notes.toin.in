@@ -1,5 +1,5 @@
 import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm } from "antd";
-import { LoadingOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LoadingOutlined, EditFilled, DeleteOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -16,6 +16,8 @@ const Notes: React.FC = () => {
     const notesRef = collection(firestore, 'notes').withConverter(noteConverter);
     const [messageApi, contextHolder] = message.useMessage();
     const [notes, loading, error] = useCollectionData(notesRef);
+    const [openViewEditQuickNote, setOpenViewEditQuickNote] = useState<boolean>(false);
+    const [editMode, setEditMode] = useState<boolean>(false);
 
     const openQuickNoteDrawer = () => {
         setOpenQuickNote(true);
@@ -24,6 +26,11 @@ const Notes: React.FC = () => {
     const closeQuickNoteDrawer = () => {
         setOpenQuickNote(false);
     };
+
+    const closeOpenViewEditQuickNote = () => {
+        setOpenViewEditQuickNote(false);
+        setEditMode(false);
+    }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && event.metaKey) {
@@ -91,7 +98,7 @@ const Notes: React.FC = () => {
                                 <DeleteOutlined />
                             </Popconfirm>
                         }>
-                        <p className="card-description">{note.body}</p>
+                        <p className="card-description" onClick={() => setOpenViewEditQuickNote(true)}>{note.body}</p>
                     </Card>);
                 })}
             </div>
@@ -119,6 +126,27 @@ const Notes: React.FC = () => {
             <TextArea rows={11} placeholder="maxLength is 2000" maxLength={2000} value={quickNote}
                 onChange={(e) => setQuickNote(e.target.value)}
                 onKeyDown={handleKeyDown} />
+        </Drawer>
+        <Drawer
+            title="Drawer with extra actions"
+            placement="right"
+            width={500}
+            onClose={closeOpenViewEditQuickNote}
+            open={openViewEditQuickNote}
+            extra={
+                <Space>
+                    {editMode
+                        ? <Button type="primary" onClick={closeOpenViewEditQuickNote}>
+                            Save
+                        </Button>
+                        : <EditFilled style={{color: "#00b96b"}} onClick={() => setEditMode(true)} />
+                    }
+                </Space>
+            }
+        >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
         </Drawer>
     </>);
 }
