@@ -15,7 +15,7 @@ export const noteConverter: FirestoreDataConverter<NoteType> = {
     snapshot: QueryDocumentSnapshot,
     options: SnapshotOptions
   ): NoteType {
-    const data = snapshot.data(options);    
+    const data = snapshot.data(options);
     return {
       id: data.note.id,
       ref: snapshot.ref,

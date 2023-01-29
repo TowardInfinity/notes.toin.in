@@ -58,7 +58,8 @@ const Notes: React.FC = () => {
         {!loading ?
             <div className="site-card-border-less-wrapper card-container">
                 {notes?.map((note: NoteType) => {
-                    return (<Card title={note.title} bordered={false} className="card">
+                    return (<Card title={new Date(Number(note.title)).toLocaleString()}
+                        bordered={false} className="card" key={note.ref?.id}>
                         <p className="card-description">{note.body}</p>
                     </Card>);
                 })}
