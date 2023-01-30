@@ -1,5 +1,5 @@
 import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal } from "antd";
-import { LoadingOutlined, EditFilled, DeleteOutlined } from '@ant-design/icons';
+import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -136,7 +136,7 @@ const Notes: React.FC = () => {
                 </Row>
             </div>
         }
-        <FloatButton onClick={openQuickNoteDrawer} />
+        <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 94 }} />
         <Drawer
             title="Quick Note"
             placement='bottom'

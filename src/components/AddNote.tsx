@@ -1,12 +1,17 @@
 import MDEditor from "@uiw/react-md-editor";
 import { FloatButton, message } from "antd";
+import { SaveOutlined } from '@ant-design/icons';
 import { addDoc, collection } from "firebase/firestore";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { firestore } from "../firebase";
 import { createNoteObject } from "../utils/helper";
 
-const AddNotes: React.FC = () => {
+interface Props {
+    editMode?: boolean
+}
+
+const AddNotes: React.FC<Props> = ({editMode = true}) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [value, setValue] = React.useState<string>("**Hello world!!!**");
     const navigate = useNavigate();
@@ -29,14 +34,19 @@ const AddNotes: React.FC = () => {
     };
 
     return (<>
-    {contextHolder}
+        {contextHolder}
         <div className="container md-container">
             <MDEditor
                 value={value}
                 height={920}
                 onChange={(val = "") => setValue(val)}
             />
-            <FloatButton onClick={handleSave} />
+            <FloatButton
+                shape="square"
+                type="primary"
+                style={{ right: 24 }}
+                icon={<SaveOutlined />}
+                onClick={handleSave} />
         </div>
     </>);
 }
