@@ -1,6 +1,6 @@
 {
   "name": "toin-notes",
-  "version": "0.1.0",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.0.0",
