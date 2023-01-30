@@ -44,7 +44,7 @@ const Notes: React.FC = () => {
         saveQuickNote();
     };
 
-    const saveQuickNote = async () => {
+    const saveQuickNote = () => {
         if (quickNote.trim().length === 0) {
             return;
         }
@@ -73,8 +73,6 @@ const Notes: React.FC = () => {
     );
 
     const openViewEditDrawer = (id?: string) => {
-        console.warn(id);
-
         if (id) {
             getNote(id);
             setOpenViewEditQuickNote(true);
@@ -117,7 +115,7 @@ const Notes: React.FC = () => {
             <div className="site-card-border-less-wrapper card-container">
                 <Row gutter={30}>
                     {notes?.map((note: NoteType) => {
-                        return (<Col span={4.5}>
+                        return (<Col span={4.5} key={note.ref?.id + note.id}>
                             <Card hoverable title={getDateInLocalString(note?.id)}
                                 bordered={false} className="card" key={note.ref?.id}
                                 extra={
@@ -169,6 +167,7 @@ const Notes: React.FC = () => {
             onOk={() => setEditMode(true)}
             onCancel={closeOpenViewEditQuickNote}
             width={1000}
+            key={viewEditNote?.ref?.id}
             footer={[
                 <>
                     {editMode
