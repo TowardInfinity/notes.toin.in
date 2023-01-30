@@ -70,6 +70,11 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.md-container {
+  /* height: 100%;
+  width: 100%; */
+}
+
 @media (max-width: 768px) {
   .card {
     width: 100%;
