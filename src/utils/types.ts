@@ -9,5 +9,12 @@ export type NoteType = {
     id: string,
     title: string,
     body: string,
-    ref?: DocumentReference<DocumentData>
+    ref?: DocumentReference<DocumentData>,
+    noteType: NoteTypeType
 };
+
+export type Note = {
+    note: NoteType
+};
+
+export type NoteTypeType = "QUICK" | "MARKDOWN";

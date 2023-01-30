@@ -5,7 +5,7 @@ import {
   QueryDocumentSnapshot,
   SnapshotOptions,
 } from "firebase/firestore";
-import { NoteType } from "./types";
+import { Note, NoteType, NoteTypeType } from "./types";
 
 export const noteConverter: FirestoreDataConverter<NoteType> = {
   toFirestore(note: WithFieldValue<NoteType>): DocumentData {    
@@ -21,19 +21,17 @@ export const noteConverter: FirestoreDataConverter<NoteType> = {
       ref: snapshot.ref,
       title: data.note.title,
       body: data.note.body,
+      noteType: (data.note?.noteType) ? data.note?.noteType : "QUICK"
     };
   },
 };
 
-export type Note = {
-    note: NoteType
-};
-
-export const createNoteObject = (body: string): Note => {
+export const createNoteObject = (body: string, noteType: NoteTypeType = "QUICK"): Note => {
     const now: number = Date.now();
     const note: NoteType = {
         id: String(now),
         title: String(now),
+        noteType,
         body
     };
     return { note };
