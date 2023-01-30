@@ -24,3 +24,21 @@ export const noteConverter: FirestoreDataConverter<NoteType> = {
     };
   },
 };
+
+export type Note = {
+    note: NoteType
+};
+
+export const createNoteObject = (body: string): Note => {
+    const now: number = Date.now();
+    const note: NoteType = {
+        id: String(now),
+        title: String(now),
+        body
+    };
+    return { note };
+};
+
+export const getDateInLocalString = (epoch: any) => {
+    return new Date(Number(epoch)).toLocaleString();
+}

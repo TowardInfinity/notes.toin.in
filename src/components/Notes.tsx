@@ -1,12 +1,12 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
-import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
-import { noteConverter } from "../utils/helper";
+import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
@@ -48,14 +48,7 @@ const Notes: React.FC = () => {
         if (quickNote.trim().length === 0) {
             return;
         }
-        const now: number = Date.now();
-        const note: NoteType = {
-            id: String(now),
-            title: String(now),
-            body: quickNote
-        };
-
-        addDoc(collection(firestore, 'notes'), { note })
+        addDoc(collection(firestore, 'notes'), createNoteObject(quickNote))
             .then(res => {
                 setQuickNote('');
                 messageApi.success("Added!");
@@ -89,8 +82,30 @@ const Notes: React.FC = () => {
     }
 
     const getNote = (id: string) => {
-
+        getDoc(doc(firestore, "notes", id).withConverter(noteConverter))
+            .then(res => {
+                setViewEditNote(res.data());
+                if (res.exists()) {
+                    setQuickNote(res.data()?.body);
+                }
+            })
+            .catch(err => {
+                messageApi.success(`[Error] ${err}`);
+            });
     }
+
+    const handleEditSave = (id?: string) => {
+        closeOpenViewEditQuickNote();
+        if (id) {
+            setDoc(doc(firestore, "notes", id), createNoteObject(quickNote))
+                .then(res => {
+                    messageApi.success("Updated!");
+                })
+                .catch(err => {
+                    messageApi.success(`[Error] ${err}`);
+                });
+        }
+    };
 
     if (loading) {
         return <Spin indicator={antIcon} className="spinner" size="large" />;
@@ -103,7 +118,7 @@ const Notes: React.FC = () => {
                 <Row gutter={30}>
                     {notes?.map((note: NoteType) => {
                         return (<Col span={4.5}>
-                            <Card hoverable title={new Date(Number(note.title)).toLocaleString()}
+                            <Card hoverable title={getDateInLocalString(note?.id)}
                                 bordered={false} className="card" key={note.ref?.id}
                                 extra={
                                     <Popconfirm
@@ -147,28 +162,29 @@ const Notes: React.FC = () => {
                 onChange={(e) => setQuickNote(e.target.value)}
                 onKeyDown={handleKeyDown} />
         </Drawer>
-        <Drawer
-            title={editMode ? "Edit Note" : "View Note"}
-            placement="right"
-            width={400}
-            onClose={closeOpenViewEditQuickNote}
+        <Modal
+            title={`Note: ${getDateInLocalString(viewEditNote?.id)}`}
+            centered
             open={openViewEditQuickNote}
-            extra={
-                <Space>
-                    <Button type="primary" onClick={closeOpenViewEditQuickNote}>
-                            Cancel
-                        </Button>
+            onOk={() => setEditMode(true)}
+            onCancel={closeOpenViewEditQuickNote}
+            width={1000}
+            footer={[
+                <>
                     {editMode
-                        ? <Button type="primary" onClick={closeOpenViewEditQuickNote}>
+                        ? <Button type="primary" onClick={() => handleEditSave(viewEditNote?.ref?.id)}>
                             Save
                         </Button>
                         : <EditFilled style={{ color: "#00b96b" }} onClick={() => setEditMode(true)} />
                     }
-                </Space>
-            }
+                </>
+            ]}
         >
-            <p>Some contents...</p>
-        </Drawer>
+            <TextArea disabled={!editMode} rows={11} placeholder="maxLength is 2000"
+                maxLength={2000} value={quickNote} onKeyDown={handleKeyDown}
+                onChange={(e) => setQuickNote(e.target.value)} />
+
+        </Modal>
     </>);
 }
 
