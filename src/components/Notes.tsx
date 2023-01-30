@@ -1,4 +1,4 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useState } from "react";
@@ -18,6 +18,7 @@ const Notes: React.FC = () => {
     const [notes, loading, error] = useCollectionData(notesRef);
     const [openViewEditQuickNote, setOpenViewEditQuickNote] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(false);
+    const [viewEditNote, setViewEditNote] = useState<NoteType | undefined>(undefined);
 
     const openQuickNoteDrawer = () => {
         setOpenQuickNote(true);
@@ -44,6 +45,9 @@ const Notes: React.FC = () => {
     };
 
     const saveQuickNote = async () => {
+        if (quickNote.trim().length === 0) {
+            return;
+        }
         const now: number = Date.now();
         const note: NoteType = {
             id: String(now),
@@ -75,6 +79,18 @@ const Notes: React.FC = () => {
         [],
     );
 
+    const openViewEditDrawer = (id?: string) => {
+        console.warn(id);
+
+        if (id) {
+            getNote(id);
+            setOpenViewEditQuickNote(true);
+        }
+    }
+
+    const getNote = (id: string) => {
+
+    }
 
     if (loading) {
         return <Spin indicator={antIcon} className="spinner" size="large" />;
@@ -84,23 +100,27 @@ const Notes: React.FC = () => {
         {contextHolder}
         {!loading &&
             <div className="site-card-border-less-wrapper card-container">
-                {notes?.map((note: NoteType) => {
-                    return (<Card title={new Date(Number(note.title)).toLocaleString()}
-                        bordered={false} className="card" key={note.ref?.id}
-                        extra={
-                            <Popconfirm
-                                title="Delete the note"
-                                description="Are you sure to delete this note?"
-                                okText="Yes"
-                                cancelText="No"
-                                onConfirm={() => handleDelete(note.ref?.id)}
-                            >
-                                <DeleteOutlined />
-                            </Popconfirm>
-                        }>
-                        <p className="card-description" onClick={() => setOpenViewEditQuickNote(true)}>{note.body}</p>
-                    </Card>);
-                })}
+                <Row gutter={30}>
+                    {notes?.map((note: NoteType) => {
+                        return (<Col span={4.5}>
+                            <Card hoverable title={new Date(Number(note.title)).toLocaleString()}
+                                bordered={false} className="card" key={note.ref?.id}
+                                extra={
+                                    <Popconfirm
+                                        title="Delete the note"
+                                        description="Are you sure to delete this note?"
+                                        okText="Yes"
+                                        cancelText="No"
+                                        onConfirm={() => handleDelete(note.ref?.id)}
+                                    >
+                                        <DeleteOutlined />
+                                    </Popconfirm>
+                                }>
+                                <p className="card-description" onClick={() => openViewEditDrawer(note.ref?.id)}>{note.body}</p>
+                            </Card>
+                        </Col>);
+                    })}
+                </Row>
             </div>
         }
         <FloatButton onClick={openQuickNoteDrawer} />
@@ -128,24 +148,25 @@ const Notes: React.FC = () => {
                 onKeyDown={handleKeyDown} />
         </Drawer>
         <Drawer
-            title="Drawer with extra actions"
+            title={editMode ? "Edit Note" : "View Note"}
             placement="right"
-            width={500}
+            width={400}
             onClose={closeOpenViewEditQuickNote}
             open={openViewEditQuickNote}
             extra={
                 <Space>
+                    <Button type="primary" onClick={closeOpenViewEditQuickNote}>
+                            Cancel
+                        </Button>
                     {editMode
                         ? <Button type="primary" onClick={closeOpenViewEditQuickNote}>
                             Save
                         </Button>
-                        : <EditFilled style={{color: "#00b96b"}} onClick={() => setEditMode(true)} />
+                        : <EditFilled style={{ color: "#00b96b" }} onClick={() => setEditMode(true)} />
                     }
                 </Space>
             }
         >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
             <p>Some contents...</p>
         </Drawer>
     </>);

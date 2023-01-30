@@ -41,22 +41,22 @@ body {
   }
 }
 
-.card-container {
+/* .card-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-}
+} */
 
-.card {
-  width: 300px;
-  height: 250px;
-  margin: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  border-radius: 10px;
-  overflow: hidden;
-}
+/* .card { */
+  /* width: 300px;
+  height: 250px; */
+  /* margin: 20px; */
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  /* text-align: center; */
+  /* border-radius: 10px; */
+  /* overflow: hidden; */
+/* } */
 
 .card-description {
   overflow: hidden;
@@ -64,6 +64,28 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
+}
+
+.card-container {
+  margin: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+   /* display: flex;
+  flex-wrap: wrap;  */
+  /* justify-content: space-between; */
+  /* margin-right: -1rem;
+  margin-left: -1rem; */
+}
+
+.card {
+  width: 300px;
+  height: 250px;
+  /* width: calc(33.33% - 1rem); */
+  margin-bottom: 1rem;
+  /* padding: 1rem;
+  box-sizing: border-box; */
 }
 
 .spinner {
