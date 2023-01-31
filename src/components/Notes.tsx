@@ -138,7 +138,7 @@ const Notes: React.FC = () => {
                 </Row>
             </div>
         }
-        <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 94 }} />
+        <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 40 }} />
         <Drawer
             title="Quick Note"
             placement='bottom'

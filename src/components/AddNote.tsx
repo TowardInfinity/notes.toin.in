@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { firestore } from "../firebase";
 import { createNoteObject } from "../utils/helper";
 import 'katex/dist/katex.css';
-import katex from 'katex';
-import { getCodeString } from 'rehype-rewrite';
 
 interface Props {
     editMode?: boolean
@@ -47,9 +45,10 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
             <FloatButton
                 shape="square"
                 type="primary"
-                style={{ right: 24 }}
+                style={{ right: 40 }}
                 icon={<SaveOutlined />}
                 onClick={handleSave}
+                tooltip={<div>Save Note</div>}
             />
         </div>
     </>);
