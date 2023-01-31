@@ -1,4 +1,4 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Divider, Typography } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useState } from "react";
@@ -9,6 +9,8 @@ import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/fir
 import { createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+const { Title, Paragraph, Text, Link } = Typography;
+
 
 const Notes: React.FC = () => {
     const [openQuickNote, setOpenQuickNote] = useState<boolean>(false);
@@ -181,10 +183,15 @@ const Notes: React.FC = () => {
                 </>
             ]}
         >
-            <TextArea disabled={!editMode} rows={11} placeholder="maxLength is 2000"
-                maxLength={2000} value={editNote} onKeyDown={handleKeyDown}
-                onChange={(e) => setEditNote(e.target.value)} />
-
+            {editMode
+                ? <TextArea rows={11} placeholder="maxLength is 2000"
+                    maxLength={2000} value={editNote} onKeyDown={handleKeyDown}
+                    onChange={(e) => setEditNote(e.target.value)} />
+                : <Typography>
+                    <Paragraph>
+                        <pre>{editNote}</pre>
+                    </Paragraph>
+                </Typography>}
         </Modal>
     </>);
 }
