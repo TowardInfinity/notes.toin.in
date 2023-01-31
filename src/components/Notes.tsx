@@ -32,6 +32,7 @@ const Notes: React.FC = () => {
     const closeOpenViewEditQuickNote = () => {
         setOpenViewEditQuickNote(false);
         setEditMode(false);
+        setViewEditNote(undefined);
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -76,7 +77,6 @@ const Notes: React.FC = () => {
     const openViewEditDrawer = (id?: string) => {
         if (id) {
             getNote(id);
-            setOpenViewEditQuickNote(true);
         }
     }
 
@@ -87,6 +87,7 @@ const Notes: React.FC = () => {
                 if (res.exists()) {
                     setEditNote(res.data()?.body);
                 }
+                setOpenViewEditQuickNote(true);
             })
             .catch(err => {
                 messageApi.success(`[Error] ${err}`);
