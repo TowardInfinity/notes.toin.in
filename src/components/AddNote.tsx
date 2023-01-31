@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { firestore } from "../firebase";
 import { createNoteObject } from "../utils/helper";
 import 'katex/dist/katex.css';
+import rehypeSanitize from "rehype-sanitize";
 
 interface Props {
     editMode?: boolean
@@ -41,6 +42,9 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
                 value={value}
                 height={920}
                 onChange={(val = "") => setValue(val)}
+                previewOptions={{
+                    rehypePlugins: [[rehypeSanitize]],
+                }}
             />
             <FloatButton
                 shape="square"

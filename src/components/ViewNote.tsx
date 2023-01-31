@@ -1,6 +1,7 @@
 import MDEditor from "@uiw/react-md-editor";
 import { Typography } from "antd";
 import React from "react";
+import rehypeSanitize from "rehype-sanitize";
 import { NoteType } from "../utils/types";
 
 type Props = {
@@ -19,9 +20,12 @@ const ViewNote: React.FC<Props> = ({ note }) => {
         case "MARKDOWN":
             return <MDEditor
                 value={note.body}
-                height={300}
                 preview="preview"
                 hideToolbar={true}
+                height={400}
+                previewOptions={{
+                    rehypePlugins: [[rehypeSanitize]],
+                }}
             />;
         case "QUICK":
             return (<Typography>
