@@ -7,6 +7,7 @@ import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
 import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
+import ViewNote from "./ViewNote";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Title, Paragraph, Text, Link } = Typography;
@@ -187,11 +188,7 @@ const Notes: React.FC = () => {
                 ? <TextArea rows={11} placeholder="maxLength is 2000"
                     maxLength={2000} value={editNote} onKeyDown={handleKeyDown}
                     onChange={(e) => setEditNote(e.target.value)} />
-                : <Typography>
-                    <Paragraph>
-                        <pre>{editNote}</pre>
-                    </Paragraph>
-                </Typography>}
+                : <ViewNote note={viewEditNote} />}
         </Modal>
     </>);
 }
