@@ -13,6 +13,7 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const Notes: React.FC = () => {
     const [openQuickNote, setOpenQuickNote] = useState<boolean>(false);
     const [quickNote, setQuickNote] = useState<string>('');
+    const [editNote, setEditNote] = useState<string>('');
     const notesRef = collection(firestore, 'notes').withConverter(noteConverter);
     const [messageApi, contextHolder] = message.useMessage();
     const [notes, loading, error] = useCollectionData(notesRef);
@@ -84,7 +85,7 @@ const Notes: React.FC = () => {
             .then(res => {
                 setViewEditNote(res.data());
                 if (res.exists()) {
-                    setQuickNote(res.data()?.body);
+                    setEditNote(res.data()?.body);
                 }
             })
             .catch(err => {
@@ -95,7 +96,7 @@ const Notes: React.FC = () => {
     const handleEditSave = (id?: string) => {
         closeOpenViewEditQuickNote();
         if (id) {
-            setDoc(doc(firestore, "notes", id), createNoteObject(quickNote))
+            setDoc(doc(firestore, "notes", id), createNoteObject(editNote))
                 .then(res => {
                     messageApi.success("Updated!");
                 })
@@ -180,8 +181,8 @@ const Notes: React.FC = () => {
             ]}
         >
             <TextArea disabled={!editMode} rows={11} placeholder="maxLength is 2000"
-                maxLength={2000} value={quickNote} onKeyDown={handleKeyDown}
-                onChange={(e) => setQuickNote(e.target.value)} />
+                maxLength={2000} value={editNote} onKeyDown={handleKeyDown}
+                onChange={(e) => setEditNote(e.target.value)} />
 
         </Modal>
     </>);

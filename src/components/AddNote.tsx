@@ -6,12 +6,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { firestore } from "../firebase";
 import { createNoteObject } from "../utils/helper";
+import 'katex/dist/katex.css';
+import katex from 'katex';
+import { getCodeString } from 'rehype-rewrite';
 
 interface Props {
     editMode?: boolean
 }
 
-const AddNotes: React.FC<Props> = ({editMode = true}) => {
+const AddNotes: React.FC<Props> = ({ editMode = true }) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [value, setValue] = React.useState<string>("**Hello world!!!**");
     const navigate = useNavigate();
@@ -46,7 +49,8 @@ const AddNotes: React.FC<Props> = ({editMode = true}) => {
                 type="primary"
                 style={{ right: 24 }}
                 icon={<SaveOutlined />}
-                onClick={handleSave} />
+                onClick={handleSave}
+            />
         </div>
     </>);
 }
