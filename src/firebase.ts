@@ -28,3 +28,4 @@ const database = getDatabase(app);
 const firestore = getFirestore(app);
 
 export {auth, database, firestore};
+export default app;
