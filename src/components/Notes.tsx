@@ -1,7 +1,7 @@
 import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Divider, Typography } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
@@ -20,9 +20,27 @@ const Notes: React.FC = () => {
     const notesRef = collection(firestore, 'notes').withConverter(noteConverter);
     const [messageApi, contextHolder] = message.useMessage();
     const [notes, loading, error] = useCollectionData(notesRef);
+    const [sortedNotes, setSortedNotes] = useState<NoteType[]>([]);
     const [openViewEditQuickNote, setOpenViewEditQuickNote] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [viewEditNote, setViewEditNote] = useState<NoteType | undefined>(undefined);
+
+
+    useEffect(() => {
+        if (notes) {
+            const sortedArr = notes.sort((a, b) => {
+                if (a.id < b.id) {
+                    return 1;
+                } else if (a.id > b.id) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+            setSortedNotes(sortedArr);
+        }
+    }, [notes]);
+
 
     const openQuickNoteDrawer = () => {
         setOpenQuickNote(true);
@@ -119,7 +137,7 @@ const Notes: React.FC = () => {
         {!loading &&
             <div className="site-card-border-less-wrapper card-container">
                 <Row gutter={30}>
-                    {notes?.map((note: NoteType) => {
+                    {sortedNotes.map((note: NoteType) => {
                         return (<Col span={4.5} key={note.ref?.id + note.id}>
                             <Card hoverable title={getDateInLocalString(note?.id)}
                                 bordered={false} className="card" key={note.ref?.id}
