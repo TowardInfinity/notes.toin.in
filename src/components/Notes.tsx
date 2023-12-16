@@ -1,4 +1,4 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Divider, Typography } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useEffect, useState } from "react";
@@ -10,8 +10,6 @@ import { createNoteObject, getDateInLocalString, noteConverter } from "../utils/
 import ViewNote from "./ViewNote";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-const { Title, Paragraph, Text, Link } = Typography;
-
 
 const Notes: React.FC = () => {
     const [openQuickNote, setOpenQuickNote] = useState<boolean>(false);

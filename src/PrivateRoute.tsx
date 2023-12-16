@@ -1,7 +1,7 @@
 import { useIdToken } from 'react-firebase-hooks/auth';
 import { auth } from "./firebase";
 import { useEffect, useState } from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 interface Props {
     path: string;
@@ -31,13 +31,6 @@ const PrivateRoute: React.FC<Props> = ({ component: Component, ...rest }) => {
     return (
         <Route
             {...rest}
-            // render={props =>
-            //     user ? (
-            //         <Component {...props} />
-            //     ) : (
-            //         <Navigate to={{ pathname: '/login' }} />
-            //     )
-            // }
         />
     );
 }

@@ -1,18 +1,16 @@
-import React, { useCallback } from "react";
+import { type FC, useCallback, useState } from "react";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { Menu, message } from 'antd';
 import type { MenuProps } from 'antd';
-import { useIdToken } from 'react-firebase-hooks/auth';
 import {
     BookOutlined, FileAddOutlined, LogoutOutlined
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 
-const NavBar: React.FC = () => {
-    const [user, error, loading] = useIdToken(auth);
+const NavBar: FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
-    const [current, setCurrent] = React.useState<string>('notes');
+    const [current, setCurrent] = useState<string>('notes');
     const navigate = useNavigate();
 
     const handleSignOut = useCallback(() => {
