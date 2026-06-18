@@ -10,7 +10,7 @@ import Notes from "./components/Notes";
 import NavBar from "./navbar/NavBar";
 import "antd/dist/reset.css";
 import "./App.css";
-import { message } from "antd";
+import { message, ConfigProvider, theme } from "antd";
 
 const App: FC = () => {
   const [, contextHolder] = message.useMessage();
@@ -26,7 +26,15 @@ const App: FC = () => {
   }, [user]);
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: "#00b96b",
+          borderRadius: 8,
+        },
+      }}
+    >
       {contextHolder}
       <div className="App">
         {isAuth && <NavBar />}
@@ -42,7 +50,7 @@ const App: FC = () => {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
-    </>
+    </ConfigProvider>
   );
 };
 

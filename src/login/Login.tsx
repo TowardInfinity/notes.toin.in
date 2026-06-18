@@ -8,7 +8,7 @@ const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
     const handleLogin = (password: string) => {
-        const email: string | undefined = process.env.REACT_APP_EMAIL;
+        const email: string | undefined = import.meta.env.VITE_APP_EMAIL;
 
         if (!email) {
             notification.open({

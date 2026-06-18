@@ -1,4 +1,4 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Input } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useEffect, useState } from "react";
@@ -22,6 +22,7 @@ const Notes: React.FC = () => {
     const [openViewEditQuickNote, setOpenViewEditQuickNote] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [viewEditNote, setViewEditNote] = useState<NoteType | undefined>(undefined);
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
 
     useEffect(() => {
@@ -38,6 +39,15 @@ const Notes: React.FC = () => {
             setSortedNotes(sortedArr);
         }
     }, [notes]);
+
+    const filteredNotes = sortedNotes.filter((note) => {
+        const query = searchQuery.toLowerCase().trim();
+        if (!query) return true;
+        return (
+            note.body.toLowerCase().includes(query) ||
+            getDateInLocalString(note.id).toLowerCase().includes(query)
+        );
+    });
 
 
     const openQuickNoteDrawer = () => {
@@ -133,28 +143,39 @@ const Notes: React.FC = () => {
     return (<>
         {contextHolder}
         {!loading &&
-            <div className="site-card-border-less-wrapper card-container">
-                <Row gutter={30}>
-                    {sortedNotes.map((note: NoteType) => {
-                        return (<Col span={4.5} key={note.ref?.id + note.id}>
-                            <Card hoverable title={getDateInLocalString(note?.id)}
-                                bordered={false} className="card" key={note.ref?.id}
-                                extra={
-                                    <Popconfirm
-                                        title="Delete the note"
-                                        description="Are you sure to delete this note?"
-                                        okText="Yes"
-                                        cancelText="No"
-                                        onConfirm={() => handleDelete(note.ref?.id)}
-                                    >
-                                        <DeleteOutlined />
-                                    </Popconfirm>
-                                }>
-                                <p className="card-description" onClick={() => openViewEditDrawer(note.ref?.id)}>{note.body}</p>
-                            </Card>
-                        </Col>);
-                    })}
-                </Row>
+            <div className="notes-container" style={{ width: '100%', padding: '0 24px' }}>
+                <div className="search-header">
+                    <Input
+                        placeholder="Search notes..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        allowClear
+                        style={{ maxWidth: 400, margin: '20px auto', display: 'block', height: 40, borderRadius: 20 }}
+                    />
+                </div>
+                <div className="site-card-border-less-wrapper card-container">
+                    <Row gutter={[24, 24]} justify="center" style={{ width: '100%', margin: 0 }}>
+                        {filteredNotes.map((note: NoteType) => {
+                            return (<Col xs={24} sm={12} md={8} lg={6} xl={4} key={note.ref?.id + note.id}>
+                                <Card hoverable title={getDateInLocalString(note?.id)}
+                                    bordered={false} className="card" key={note.ref?.id}
+                                    extra={
+                                        <Popconfirm
+                                            title="Delete the note"
+                                            description="Are you sure to delete this note?"
+                                            okText="Yes"
+                                            cancelText="No"
+                                            onConfirm={() => handleDelete(note.ref?.id)}
+                                        >
+                                            <DeleteOutlined style={{ cursor: 'pointer' }} />
+                                        </Popconfirm>
+                                    }>
+                                    <p className="card-description" onClick={() => openViewEditDrawer(note.ref?.id)}>{note.body}</p>
+                                </Card>
+                            </Col>);
+                        })}
+                    </Row>
+                </div>
             </div>
         }
         <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 40 }} />

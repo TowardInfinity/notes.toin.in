@@ -50,7 +50,7 @@ const NavBar: FC = () => {
 
     return (<>
         {contextHolder}
-        <Menu onClick={onClick} theme='light' selectedKeys={[current]} mode="horizontal" items={items} />
+        <Menu onClick={onClick} theme='dark' selectedKeys={[current]} mode="horizontal" items={items} />
     </>);
 }
 
