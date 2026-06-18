@@ -1,18 +1,16 @@
-# notes app
+# Notes App
 
-## Idea behind
+## Idea Behind
 
 This is a hobby project.
 
-I wanted a personal note taking app. I could have created a full user login but that was not the idea it is for personal single person use.
+I wanted a personal note-taking app with a modern design and fast performance. I could have created a full multi-user system, but it is intended strictly for personal single-person use.
 
-On Landing page it asks for password directly on deployment i set the environment variable for email which is used inside the project.
+On the landing page, it asks for a login email/password. In deployment, you set an environment variable for the email, which restricts unauthorized access.
 
-Create quick note, markdown support, save code snippets for this markdown is used.
+You can create quick notes, write with full markdown support (including code snippets and math), and quickly search through your notes. Notes are automatically sorted by time.
 
-Notes are sorted by time.
-
-## Screen SHots
+## Screenshots
 
 * [Login](/screenshots/login.png)
 * [Home](/screenshots/home.png)
@@ -21,43 +19,53 @@ Notes are sorted by time.
 * [Markdown Note Add](/screenshots/add-markdown-note.png)
 * [Markdown Note View](/screenshots/view-markdown-note.png)
 
-## Tech used
+*(Note: The app has been upgraded to a unified dark theme with glassmorphism UI, so some older screenshots might look a bit different!)*
 
-* Authentication: [Firebase Authentication Email/Password](https://firebase.google.com/docs/auth)
+## Tech Used
 
-* For db: [Cloud Firestore](https://firebase.google.com/docs/firestore)
-
-* hosting: [vercel](https://vercel.com/) or firebase Hosting
-
-* UI Components: [antd](https://ant.design/)
+* **Build Tool**: [Vite](https://vitejs.dev/) (Migrated from CRA for extremely fast HMR and builds)
+* **Authentication**: [Firebase Authentication Email/Password](https://firebase.google.com/docs/auth)
+* **Database**: [Cloud Firestore](https://firebase.google.com/docs/firestore)
+* **Hosting**: [Cloudflare Pages](https://pages.cloudflare.com/) 
+* **UI Components**: [Ant Design (antd)](https://ant.design/)
 
 ## Authentication Setup
 
-* Enable Email/Password Auth from Firebase
-* Add User to firebase.
-* for local add it to .env file.
+1. Enable Email/Password Auth from Firebase.
+2. Add your User to Firebase Authentication.
+3. For local development, add your email to the `.env` file.
 
 ```env
-REACT_APP_EMAIL=jogn@doe.com
+VITE_APP_EMAIL=john@doe.com
 ```
 
-add your email for login.
+4. If you are deploying, make sure to add `VITE_APP_EMAIL` to your deployment environment variables (e.g., in Cloudflare Pages settings).
 
-if you are deploying add it to your deployment env.
+## Firebase Config & Security
 
-## Firebase Config
+### Firebase Credentials
 
-[Firebase config](/src/firebase.ts)
+Update the `firebaseConfig` object in [`src/firebase.ts`](/src/firebase.ts) with your project's credentials.
 
-update `firebaseConfig` according to your setup.
+### Cloud Firestore Rules
 
-### Cloud Firestore
+Enable Firestore and set up the security rules. This project includes a `firestore.rules` file to restrict database access strictly to authenticated users.
 
-Enable it, setup rules.
+For maximum personal security, you should update the `firestore.rules` file to only match your explicit email address (as shown in the inline comments):
 
-![Cloud Firestore](/screenshots/Cloud-Firestore.png)
+```js
+// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
 
-configure db as per shown in screenshot.
+Configure your db schema as follows:
 
 ```js
 note: <map>
@@ -67,16 +75,20 @@ note: <map>
   title: <string>
 ```
 
-## Start local server
+## Local Development
+
+Start the local dev server using Vite:
 
 ```bash
 npm install
 npm start
 ```
 
-## create Build
+## Create Production Build
 
 ```bash
 npm install
 npm run build
 ```
+
+The output will be generated in the `build/` directory, ready to be deployed to Cloudflare Pages.
