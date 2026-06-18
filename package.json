@@ -27,7 +27,8 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "eslintConfig": {
     "extends": [
@@ -48,9 +49,11 @@
     ]
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.42.0",
     "@types/katex": "^0.16.0",
     "@vitejs/plugin-react": "^6.0.2",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "wrangler": "^4.102.0"
   }
 }
