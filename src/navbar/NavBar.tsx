@@ -19,7 +19,7 @@ const NavBar: FC = () => {
         }).catch(error => {
             messageApi.error('SignOut Failed!');
         });
-    }, []);
+    }, [messageApi]);
 
     const onClick: MenuProps['onClick'] = (e) => {
         setCurrent(e.key);

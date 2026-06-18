@@ -13,7 +13,7 @@ import "./App.css";
 import { message } from "antd";
 
 const App: FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [, contextHolder] = message.useMessage();
   const [user] = useIdToken(auth);
   const [isAuth, setIsAuth] = useState(false);
 

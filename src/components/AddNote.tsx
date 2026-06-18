@@ -29,9 +29,9 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
         addDoc(collection(firestore, 'notes'), createNoteObject(value, "MARKDOWN"))
             .then(res => {
                 messageApi.success("Added!");
-                navigate("notes");
+                navigate("/notes");
             }).catch(err => {
-                messageApi.success(`[Error] ${err}`);
+                messageApi.error(`[Error] ${err}`);
             })
     };
 

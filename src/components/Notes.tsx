@@ -17,7 +17,7 @@ const Notes: React.FC = () => {
     const [editNote, setEditNote] = useState<string>('');
     const notesRef = collection(firestore, 'notes').withConverter(noteConverter);
     const [messageApi, contextHolder] = message.useMessage();
-    const [notes, loading, error] = useCollectionData(notesRef);
+    const [notes, loading] = useCollectionData(notesRef);
     const [sortedNotes, setSortedNotes] = useState<NoteType[]>([]);
     const [openViewEditQuickNote, setOpenViewEditQuickNote] = useState<boolean>(false);
     const [editMode, setEditMode] = useState<boolean>(false);
@@ -26,7 +26,7 @@ const Notes: React.FC = () => {
 
     useEffect(() => {
         if (notes) {
-            const sortedArr = notes.sort((a, b) => {
+            const sortedArr = [...notes].sort((a, b) => {
                 if (a.id < b.id) {
                     return 1;
                 } else if (a.id > b.id) {
@@ -74,7 +74,7 @@ const Notes: React.FC = () => {
                 setQuickNote('');
                 messageApi.success("Added!");
             }).catch(err => {
-                messageApi.success(`[Error] ${err}`);
+                messageApi.error(`[Error] ${err}`);
             })
     };
 
@@ -86,11 +86,11 @@ const Notes: React.FC = () => {
                         messageApi.success("Removed!");
                     })
                     .catch(err => {
-                        messageApi.success(`[Error] ${err}`);
+                        messageApi.error(`[Error] ${err}`);
                     });
             }
         },
-        [],
+        [messageApi],
     );
 
     const openViewEditDrawer = (id?: string) => {
@@ -109,7 +109,7 @@ const Notes: React.FC = () => {
                 setOpenViewEditQuickNote(true);
             })
             .catch(err => {
-                messageApi.success(`[Error] ${err}`);
+                messageApi.error(`[Error] ${err}`);
             });
     }
 
@@ -121,7 +121,7 @@ const Notes: React.FC = () => {
                     messageApi.success("Updated!");
                 })
                 .catch(err => {
-                    messageApi.success(`[Error] ${err}`);
+                    messageApi.error(`[Error] ${err}`);
                 });
         }
     };
