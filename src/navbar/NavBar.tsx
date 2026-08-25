@@ -1,4 +1,4 @@
-import { type FC, useCallback, useState } from "react";
+import { type FC, useCallback } from "react";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { Menu, message } from 'antd';
@@ -6,27 +6,32 @@ import type { MenuProps } from 'antd';
 import {
     BookOutlined, FileAddOutlined, LogoutOutlined
 } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NavBar: FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
-    const [current, setCurrent] = useState<string>('notes');
     const navigate = useNavigate();
+    const { pathname } = useLocation();
 
-    const handleSignOut = useCallback(() => {
-        signOut(auth).then(result => {
+    const handleSignOut = useCallback(async () => {
+        try {
+            await signOut(auth);
             messageApi.success("Logged Out!");
-        }).catch(error => {
+            navigate('/');
+        } catch {
             messageApi.error('SignOut Failed!');
-        });
-    }, [messageApi]);
-
-    const onClick: MenuProps['onClick'] = (e) => {
-        setCurrent(e.key);
-        if (e.key !== 'logout') {
-            navigate(e.key);
         }
+    }, [messageApi, navigate]);
+
+    const onClick: MenuProps['onClick'] = ({ key }) => {
+        if (key === 'logout') {
+            void handleSignOut();
+            return;
+        }
+        navigate(`/${key}`);
     };
+
+    const selectedKeys = [pathname.startsWith('/add-note') ? 'add-note' : 'notes'];
 
     const items: MenuProps['items'] = [
         {
@@ -38,19 +43,17 @@ const NavBar: FC = () => {
             label: 'Add Note',
             key: 'add-note',
             icon: <FileAddOutlined />,
-            disabled: false,
         },
         {
-            label: (<a href="/" onClick={handleSignOut}>Logout</a>),
+            label: 'Logout',
             key: 'logout',
             icon: <LogoutOutlined />,
-            disabled: false,
         },
     ];
 
     return (<>
         {contextHolder}
-        <Menu onClick={onClick} theme='dark' selectedKeys={[current]} mode="horizontal" items={items} />
+        <Menu onClick={onClick} theme='dark' selectedKeys={selectedKeys} mode="horizontal" items={items} />
     </>);
 }
 

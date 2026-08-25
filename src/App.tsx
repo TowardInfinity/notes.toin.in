@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { useEffect, useState } from "react";
 import type { FC } from "react";
+import { Spin } from "antd";
 import { auth } from "./firebase";
 import Login from "./login/Login";
 import Home from "./components/Home";
@@ -10,47 +10,34 @@ import Notes from "./components/Notes";
 import NavBar from "./navbar/NavBar";
 import "antd/dist/reset.css";
 import "./App.css";
-import { message, ConfigProvider, theme } from "antd";
 
 const App: FC = () => {
-  const [, contextHolder] = message.useMessage();
-  const [user] = useIdToken(auth);
-  const [isAuth, setIsAuth] = useState(false);
+  const [user, loading] = useIdToken(auth);
+  const isAuth = !!user;
 
-  useEffect(() => {
-    if (user) {
-      setIsAuth(true);
-    } else {
-      setIsAuth(false);
-    }
-  }, [user]);
+  if (loading) {
+    return (
+      <div className="app-loading">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-        token: {
-          colorPrimary: "#00b96b",
-          borderRadius: 8,
-        },
-      }}
-    >
-      {contextHolder}
-      <div className="App">
-        {isAuth && <NavBar />}
-        <Routes>
-          <Route path="/" element={isAuth ? <Notes /> : <Login />} />
-          {isAuth && (
-            <>
-              <Route path="/home" element={<Home />} />
-              <Route path="/add-note" element={<AddNotes />} />
-              <Route path="/notes" element={<Notes />} />
-            </>
-          )}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </ConfigProvider>
+    <div className="App">
+      {isAuth && <NavBar />}
+      <Routes>
+        <Route path="/" element={isAuth ? <Notes /> : <Login />} />
+        {isAuth && (
+          <>
+            <Route path="/home" element={<Home />} />
+            <Route path="/add-note" element={<AddNotes />} />
+            <Route path="/notes" element={<Notes />} />
+          </>
+        )}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </div>
   );
 };
 
