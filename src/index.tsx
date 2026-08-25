@@ -14,6 +14,7 @@ root.render(
       theme={{
         token: {
           colorPrimary: '#00b96b',
+          colorTextPlaceholder: 'rgba(255,255,255,0.65)',
           borderRadius: 8,
         },
         algorithm: theme.darkAlgorithm,

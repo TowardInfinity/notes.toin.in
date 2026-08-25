@@ -56,6 +56,8 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
                 style={{ right: 40 }}
                 icon={<SaveOutlined />}
                 onClick={handleSave}
+                disabled={!value.trim()}
+                aria-label="Save note"
                 tooltip={<div>Save Note</div>}
             />
         </div>

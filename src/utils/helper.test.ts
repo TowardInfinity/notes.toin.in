@@ -3,8 +3,11 @@ import { QueryDocumentSnapshot, DocumentReference } from "firebase/firestore";
 import {
   buildEditPatch,
   createNoteObject,
+  deriveTitle,
   getDateInLocalString,
+  getCompactDate,
   noteConverter,
+  stripMarkdown,
 } from "./helper";
 import { NoteType } from "./types";
 
@@ -95,5 +98,58 @@ describe("getDateInLocalString", () => {
     expect(getDateInLocalString(1700000000000)).toBe(
       getDateInLocalString("1700000000000")
     );
+  });
+});
+
+describe("deriveTitle", () => {
+  it("uses the first non-empty line, trimmed", () => {
+    expect(deriveTitle("\n\n  hello world\nsecond line")).toBe("hello world");
+  });
+
+  it("truncates long first lines to ~48 chars with an ellipsis", () => {
+    const long = "a".repeat(80);
+    const title = deriveTitle(long);
+    expect(title.length).toBe(49); // 48 chars + ellipsis
+    expect(title.endsWith("…")).toBe(true);
+  });
+
+  it("falls back to (untitled note) for whitespace-only bodies", () => {
+    expect(deriveTitle("   \n\t\n  ")).toBe("(untitled note)");
+    expect(deriveTitle("")).toBe("(untitled note)");
+  });
+});
+
+describe("getCompactDate", () => {
+  it("returns a short format without seconds", () => {
+    const formatted = getCompactDate(0);
+    expect(formatted).not.toMatch(/:\d{2}:\d{2}/); // no H:mm:ss pattern
+  });
+
+  it("accepts epoch strings and numbers identically", () => {
+    expect(getCompactDate("1700000000000")).toBe(getCompactDate(1700000000000));
+  });
+});
+
+describe("stripMarkdown", () => {
+  it("converts links to their text", () => {
+    expect(stripMarkdown("see [docs](https://example.com) now")).toBe("see docs now");
+  });
+
+  it("converts images to their alt text", () => {
+    expect(stripMarkdown("![cat photo](https://x.com/cat.png)")).toBe("cat photo");
+  });
+
+  it("strips headers, bold, italics and inline code", () => {
+    expect(stripMarkdown("## Heading\n**bold** *it* `code`")).toBe(
+      "Heading bold it code"
+    );
+  });
+
+  it("removes code fences and blockquotes", () => {
+    expect(stripMarkdown("> quoted\n```\nconst x = 1;\n```")).toBe("quoted");
+  });
+
+  it("collapses multiline whitespace into single spaces", () => {
+    expect(stripMarkdown("one\n\ntwo\n\nthree")).toBe("one two three");
   });
 });
