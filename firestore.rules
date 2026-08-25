@@ -1,11 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only allow authenticated users to read and write
-    // For maximum security in a personal app, change this to:
-    // allow read, write: if request.auth != null && request.auth.token.email == "your-email@example.com";
+    // Single-user app: only the owner account may read/write any document.
+    // NOTE: also disable new sign-ups in Firebase Console (Authentication -> Sign-up method),
+    // so strangers cannot even create accounts against this project.
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null
+        && request.auth.token.email == 'mobshshir@toin.in';
     }
   }
 }
