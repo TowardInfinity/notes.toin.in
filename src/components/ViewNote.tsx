@@ -2,6 +2,10 @@ import MDEditor from "@uiw/react-md-editor";
 import { Typography } from "antd";
 import React from "react";
 import rehypeSanitize from "rehype-sanitize";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import { mdSanitizeSchema } from "../utils/mdSchema";
+import 'katex/dist/katex.css';
 import { NoteType } from "../utils/types";
 
 type Props = {
@@ -24,7 +28,8 @@ const ViewNote: React.FC<Props> = ({ note }) => {
                 hideToolbar={true}
                 height={400}
                 previewOptions={{
-                    rehypePlugins: [[rehypeSanitize]],
+                    remarkPlugins: [remarkMath],
+                    rehypePlugins: [[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]],
                 }}
             />;
         case "QUICK":

@@ -8,6 +8,9 @@ import { firestore } from "../firebase";
 import { createNoteObject } from "../utils/helper";
 import 'katex/dist/katex.css';
 import rehypeSanitize from "rehype-sanitize";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import { mdSanitizeSchema } from "../utils/mdSchema";
 
 interface Props {
     editMode?: boolean
@@ -43,7 +46,8 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
                 height={920}
                 onChange={(val = "") => setValue(val)}
                 previewOptions={{
-                    rehypePlugins: [[rehypeSanitize]],
+                    remarkPlugins: [remarkMath],
+                    rehypePlugins: [[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]],
                 }}
             />
             <FloatButton

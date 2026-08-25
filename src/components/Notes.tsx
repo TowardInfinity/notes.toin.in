@@ -9,6 +9,9 @@ import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/
 import { buildEditPatch, createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import { mdSanitizeSchema } from "../utils/mdSchema";
 import ViewNote from "./ViewNote";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -237,9 +240,10 @@ const Notes: React.FC = () => {
                         value={editNote}
                         height={300}
                         onChange={(val = "") => setEditNote(val)}
-                        previewOptions={{
-                            rehypePlugins: [[rehypeSanitize]],
-                        }}
+                            previewOptions={{
+                                remarkPlugins: [remarkMath],
+                                rehypePlugins: [[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]],
+                            }}
                     />
                     : <TextArea rows={11} placeholder="maxLength is 2000"
                         maxLength={2000} value={editNote} onKeyDown={handleEditKeyDown}
