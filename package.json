@@ -19,7 +19,9 @@
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^6.30.6",
-    "rehype-sanitize": "^5.0.1"
+    "rehype-katex": "^6.0.3",
+    "rehype-sanitize": "^5.0.1",
+    "remark-math": "^5.1.1"
   },
   "scripts": {
     "start": "vite",
