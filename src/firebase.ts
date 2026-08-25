@@ -1,29 +1,21 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your web app's Firebase configuration.
+// These values are public identifiers, not secrets; access is controlled
+// by Firebase Security Rules and API key restrictions in Google Cloud.
 const firebaseConfig = {
   apiKey: "AIzaSyCMF3KEZuv9ybwoVtRN7CXzMUQ1ppWmCCk",
   authDomain: "toin-notes.firebaseapp.com",
-  databaseURL: "https://toin-notes-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "toin-notes",
   storageBucket: "toin-notes.appspot.com",
   messagingSenderId: "81961763470",
-  appId: "1:81961763470:web:dca378897fc7e69d3bffdf",
-  measurementId: "G-S7FKFMBM33"
+  appId: "1:81961763470:web:dca378897fc7e69d3bffdf"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app);
 const firestore = getFirestore(app);
 
-export {auth, database, firestore};
-export default app;
+export { auth, firestore };
