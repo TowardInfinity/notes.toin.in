@@ -1,4 +1,4 @@
-import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Input } from "antd";
+import { Button, Drawer, FloatButton, message, Space, Tooltip, Card, Spin, Popconfirm, Col, Row, Modal, Input, Empty } from "antd";
 import { LoadingOutlined, EditFilled, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import TextArea from "antd/es/input/TextArea";
 import React, { useCallback, useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
 import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { buildEditPatch, createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
+import { buildEditPatch, createNoteObject, getDateInLocalString, noteConverter, deriveTitle, getCompactDate, stripMarkdown } from "../utils/helper";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import remarkMath from "remark-math";
@@ -28,6 +28,7 @@ const Notes: React.FC = () => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [viewEditNote, setViewEditNote] = useState<NoteType | undefined>(undefined);
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [saving, setSaving] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -137,16 +138,23 @@ const Notes: React.FC = () => {
     }
 
     const handleEditSave = (id?: string) => {
-        if (id) {
-            updateDoc(doc(firestore, "notes", id), buildEditPatch(editNote))
-                .then(res => {
-                    messageApi.success("Updated!");
-                    closeOpenViewEditQuickNote();
-                })
-                .catch(err => {
-                    messageApi.error(`[Error] ${err}`);
-                });
+        if (!id || saving) {
+            return;
         }
+        if (!editNote.trim()) {
+            messageApi.warning('Note cannot be empty');
+            return;
+        }
+        setSaving(true);
+        updateDoc(doc(firestore, "notes", id), buildEditPatch(editNote))
+            .then(res => {
+                messageApi.success("Updated!");
+                closeOpenViewEditQuickNote();
+            })
+            .catch(err => {
+                messageApi.error(`[Error] ${err}`);
+            })
+            .finally(() => setSaving(false));
     };
 
     if (loading) {
@@ -168,10 +176,20 @@ const Notes: React.FC = () => {
                 </div>
                 <div className="site-card-border-less-wrapper card-container">
                     <Row gutter={[24, 24]} justify="center" style={{ width: '100%', margin: 0 }}>
-                        {filteredNotes.map((note: NoteType) => {
+                        {(notes ?? []).length === 0 ? (
+                            <Col span={24}>
+                                <Empty description="No notes yet">
+                                    <Button type="primary" onClick={openQuickNoteDrawer}>Add your first note</Button>
+                                </Empty>
+                            </Col>
+                        ) : filteredNotes.length === 0 && searchQuery ? (
+                            <Col span={24}>
+                                <Empty description={`No notes matching "${searchQuery}"`} />
+                            </Col>
+                        ) : filteredNotes.map((note: NoteType) => {
                             return (<Col xs={24} sm={12} md={8} lg={6} xl={4} key={note.ref?.id + note.id}>
-                                <Card hoverable title={getDateInLocalString(note?.id)}
-                                    bordered={false} className="card" key={note.ref?.id}
+                                <Card hoverable bordered={false} className="card"
+                                    title={deriveTitle(note.body)}
                                     extra={
                                         <Popconfirm
                                             title="Delete the note"
@@ -180,10 +198,13 @@ const Notes: React.FC = () => {
                                             cancelText="No"
                                             onConfirm={() => handleDelete(note.ref?.id)}
                                         >
-                                            <DeleteOutlined style={{ cursor: 'pointer' }} />
+                                            <Button type="text" size="small" icon={<DeleteOutlined />} aria-label={`Delete note: ${deriveTitle(note.body)}`} />
                                         </Popconfirm>
                                     }>
-                                    <p className="card-description" onClick={() => openViewEditDrawer(note.ref?.id)}>{note.body}</p>
+                                    <button type="button" className="card-open" onClick={() => openViewEditDrawer(note.ref?.id)}>
+                                        <span className="card-date">{getCompactDate(note.id)}</span>
+                                        <p className="card-description">{stripMarkdown(note.body)}</p>
+                                    </button>
                                 </Card>
                             </Col>);
                         })}
@@ -191,7 +212,7 @@ const Notes: React.FC = () => {
                 </div>
             </div>
         }
-        <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 40 }} />
+        <FloatButton onClick={openQuickNoteDrawer} icon={<PlusCircleOutlined />} type="primary" style={{ right: 40 }} tooltip="Add note" aria-label="Add note" />
         <Drawer
             title="Quick Note"
             placement='bottom'
@@ -204,14 +225,14 @@ const Notes: React.FC = () => {
                     <Button onClick={closeQuickNoteDrawer}>Cancel</Button>
 
                     <Tooltip placement="topRight" title="Use Command + Enter to submit">
-                        <Button onClick={addQuickNote} type="primary">
+                        <Button onClick={addQuickNote} type="primary" disabled={!quickNote.trim()}>
                             Add
                         </Button>
                     </Tooltip>
                 </Space>
             }
         >
-            <TextArea rows={11} placeholder="maxLength is 2000" maxLength={2000} value={quickNote}
+            <TextArea rows={11} placeholder="Jot a thought…" maxLength={2000} value={quickNote}
                 onChange={(e) => setQuickNote(e.target.value)}
                 onKeyDown={handleKeyDown} />
         </Drawer>
@@ -226,10 +247,12 @@ const Notes: React.FC = () => {
             footer={[
                 <>
                     {editMode
-                        ? <Button type="primary" onClick={() => handleEditSave(viewEditNote?.ref?.id)}>
+                        ? <Button type="primary" onClick={() => handleEditSave(viewEditNote?.ref?.id)} loading={saving} disabled={saving} aria-label="Save note">
                             Save
                         </Button>
-                        : <EditFilled style={{ color: "#00b96b" }} onClick={() => setEditMode(true)} />
+                        : <Button type="text" size="small" icon={<EditFilled style={{ color: "#00b96b" }} />} onClick={() => setEditMode(true)} aria-label="Edit note">
+                            Edit
+                        </Button>
                     }
                 </>
             ]}
@@ -245,7 +268,7 @@ const Notes: React.FC = () => {
                                 rehypePlugins: [[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]],
                             }}
                     />
-                    : <TextArea rows={11} placeholder="maxLength is 2000"
+                    : <TextArea rows={11} placeholder="Jot a thought…"
                         maxLength={2000} value={editNote} onKeyDown={handleEditKeyDown}
                         onChange={(e) => setEditNote(e.target.value)} />
                 : <ViewNote note={viewEditNote} />}
