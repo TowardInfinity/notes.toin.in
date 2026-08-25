@@ -112,3 +112,35 @@ body {
   }
 }
 
+/* Auth */
+.app-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(circle at top, #141b27, #0b0f19);
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(circle at top, #141b27, #0b0f19);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  padding: 32px 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px rgba(11, 15, 25, 0.55);
+}
+
+.login-title {
+  margin: 0 0 24px;
+  color: #00b96b;
+  text-align: center;
+}
+
