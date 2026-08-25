@@ -5,8 +5,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from "../firebase";
 import { NoteType } from "../utils/types";
-import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
-import { createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
+import { addDoc, collection, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { buildEditPatch, createNoteObject, getDateInLocalString, noteConverter } from "../utils/helper";
+import MDEditor from "@uiw/react-md-editor";
+import rehypeSanitize from "rehype-sanitize";
 import ViewNote from "./ViewNote";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -70,8 +72,13 @@ const Notes: React.FC = () => {
         }
     }
 
+    const handleEditKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.key === 'Enter' && event.metaKey) {
+            handleEditSave(viewEditNote?.ref?.id);
+        }
+    }
+
     const addQuickNote = () => {
-        closeQuickNoteDrawer();
         saveQuickNote();
     };
 
@@ -81,6 +88,7 @@ const Notes: React.FC = () => {
         }
         addDoc(collection(firestore, 'notes'), createNoteObject(quickNote))
             .then(res => {
+                closeQuickNoteDrawer();
                 setQuickNote('');
                 messageApi.success("Added!");
             }).catch(err => {
@@ -112,10 +120,12 @@ const Notes: React.FC = () => {
     const getNote = (id: string) => {
         getDoc(doc(firestore, "notes", id).withConverter(noteConverter))
             .then(res => {
-                setViewEditNote(res.data());
-                if (res.exists()) {
-                    setEditNote(res.data()?.body);
+                if (!res.exists()) {
+                    messageApi.error("Note not found.");
+                    return;
                 }
+                setViewEditNote(res.data());
+                setEditNote(res.data()?.body);
                 setOpenViewEditQuickNote(true);
             })
             .catch(err => {
@@ -124,11 +134,11 @@ const Notes: React.FC = () => {
     }
 
     const handleEditSave = (id?: string) => {
-        closeOpenViewEditQuickNote();
         if (id) {
-            setDoc(doc(firestore, "notes", id), createNoteObject(editNote))
+            updateDoc(doc(firestore, "notes", id), buildEditPatch(editNote))
                 .then(res => {
                     messageApi.success("Updated!");
+                    closeOpenViewEditQuickNote();
                 })
                 .catch(err => {
                     messageApi.error(`[Error] ${err}`);
@@ -203,7 +213,7 @@ const Notes: React.FC = () => {
                 onKeyDown={handleKeyDown} />
         </Drawer>
         <Modal
-            title={`Note: ${getDateInLocalString(viewEditNote?.id)}`}
+            title={viewEditNote ? `Note: ${getDateInLocalString(viewEditNote.id)}` : "Note"}
             centered
             open={openViewEditQuickNote}
             onOk={() => setEditMode(true)}
@@ -222,9 +232,18 @@ const Notes: React.FC = () => {
             ]}
         >
             {editMode
-                ? <TextArea rows={11} placeholder="maxLength is 2000"
-                    maxLength={2000} value={editNote} onKeyDown={handleKeyDown}
-                    onChange={(e) => setEditNote(e.target.value)} />
+                ? viewEditNote?.noteType === 'MARKDOWN'
+                    ? <MDEditor
+                        value={editNote}
+                        height={300}
+                        onChange={(val = "") => setEditNote(val)}
+                        previewOptions={{
+                            rehypePlugins: [[rehypeSanitize]],
+                        }}
+                    />
+                    : <TextArea rows={11} placeholder="maxLength is 2000"
+                        maxLength={2000} value={editNote} onKeyDown={handleEditKeyDown}
+                        onChange={(e) => setEditNote(e.target.value)} />
                 : <ViewNote note={viewEditNote} />}
         </Modal>
     </>);
