@@ -9,8 +9,8 @@
     "@types/react-dom": "^18.0.10",
     "@uiw/react-md-editor": "^3.20.2",
     "antd": "^5.1.6",
-    "firebase": "^12.15.0",
-    "katex": "^0.16.4",
+    "firebase": "^12.18.0",
+    "katex": "^0.18.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
@@ -31,11 +31,11 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/katex": "^0.16.0",
-    "@vitejs/plugin-react": "^6.0.2",
+    "@vitejs/plugin-react": "^6.1.0",
     "firebase-admin": "^14.3.0",
     "jsdom": "^30.0.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16",
+    "vite": "^8.2.2",
     "vitest": "^4.1.11"
   }
 }
