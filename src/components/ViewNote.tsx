@@ -22,15 +22,10 @@ const ViewNote: React.FC<Props> = ({ note }) => {
 
     switch (note.noteType) {
         case "MARKDOWN":
-            return <MDEditor
-                value={note.body}
-                preview="preview"
-                hideToolbar={true}
-                height={400}
-                previewOptions={{
-                    remarkPlugins: [remarkMath],
-                    rehypePlugins: [[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]],
-                }}
+            return <MDEditor.Markdown
+                source={note.body}
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[[rehypeSanitize, mdSanitizeSchema], [rehypeKatex]]}
             />;
         case "QUICK":
             return (<Typography>

@@ -43,7 +43,8 @@ const AddNotes: React.FC<Props> = ({ editMode = true }) => {
         <div className="container md-container">
             <MDEditor
                 value={value}
-                height={920}
+                height="calc(100vh - 220px)"
+                visibleDragbar={false}
                 onChange={(val = "") => setValue(val)}
                 previewOptions={{
                     remarkPlugins: [remarkMath],

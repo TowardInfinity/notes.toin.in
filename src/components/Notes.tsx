@@ -242,7 +242,7 @@ const Notes: React.FC = () => {
             open={openViewEditQuickNote}
             onOk={() => setEditMode(true)}
             onCancel={closeOpenViewEditQuickNote}
-            width={1000}
+            width="min(1000px, calc(100vw - 32px))"
             key={viewEditNote?.ref?.id}
             footer={[
                 <>
