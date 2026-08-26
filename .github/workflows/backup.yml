@@ -1,0 +1,77 @@
+name: Backup notes
+
+on:
+  schedule:
+    # Monthly at 03:00 UTC on the 1st
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+env:
+  BACKUP_AGE_RECIPIENT: age1869asn7chrl6s2ayp9vlthqpt0fndxj8r5n5h69vrcja82kt5srqjhmwxq
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install age (encryption)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq age
+
+      # Fail closed: never publish an unencrypted artifact to a public repo.
+      - name: Verify encryption recipient is configured
+        run: |
+          if [ -z "$BACKUP_AGE_RECIPIENT" ]; then
+            echo "::error::BACKUP_AGE_RECIPIENT is not set — refusing to create an unencrypted public artifact"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      # Kept as late as possible so third-party lifecycle scripts from npm ci
+      # never run while the credential is already on disk.
+      - name: Write service account key to temp file
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TOIN_NOTES }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT_TOIN_NOTES secret is not set"
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+
+      - name: Dump notes collection
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
+        run: npm run backup
+
+      - name: Encrypt backup (artifacts on a public repo are anonymous-readable)
+        run: |
+          plain="backups/notes-$(date -u +%F).json"
+          test -f "$plain" || { echo "::error::expected backup file $plain missing"; exit 1; }
+          age -e -r "$BACKUP_AGE_RECIPIENT" -o "$plain.age" "$plain"
+          rm -f backups/*.json
+
+      - name: Upload encrypted backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notes-backup-encrypted
+          path: backups/notes-*.json.age
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/service-account.json"
