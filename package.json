@@ -26,6 +26,7 @@
   "scripts": {
     "start": "vite",
     "test": "vitest run",
+    "backup": "node scripts/backup-notes.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@types/katex": "^0.16.0",
     "@vitejs/plugin-react": "^6.0.2",
+    "firebase-admin": "^14.3.0",
     "jsdom": "^30.0.1",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
