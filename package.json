@@ -17,7 +17,7 @@
     "react-router-dom": "^6.30.6",
     "rehype-katex": "^6.0.3",
     "rehype-sanitize": "^5.0.1",
-    "remark-math": "^5.1.1"
+    "remark-math": "^6.0.0"
   },
   "scripts": {
     "start": "vite",
