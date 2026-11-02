@@ -26,7 +26,7 @@ You can create quick notes or write full markdown notes with math rendering ($..
 * **Build Tool**: [Vite](https://vitejs.dev/) (Migrated from CRA for extremely fast HMR and builds)
 * **Authentication**: [Firebase Authentication Email/Password](https://firebase.google.com/docs/auth)
 * **Database**: [Cloud Firestore](https://firebase.google.com/docs/firestore) (with IndexedDB offline persistence)
-* **Hosting**: [Cloudflare Pages](https://pages.cloudflare.com/)
+* **Hosting**: [Cloudflare Workers (Static Assets)](https://developers.cloudflare.com/workers/static-assets/)
 * **UI Components**: [Ant Design (antd)](https://ant.design/)
 * **Math Rendering**: [KaTeX](https://katex.org/) via remark-math/rehype-katex
 * **Testing**: [Vitest](https://vitest.dev/) + Testing Library
@@ -41,7 +41,7 @@ You can create quick notes or write full markdown notes with math rendering ($..
 VITE_APP_EMAIL=john@doe.com
 ```
 
-4. If you are deploying, make sure to add `VITE_APP_EMAIL` to your deployment environment variables (e.g., in Cloudflare Pages settings).
+4. If you are deploying, make sure to add `VITE_APP_EMAIL` to your deployment environment variables (e.g., in Cloudflare dashboard settings).
 
 To be clear about what this variable does and does not do: it is compiled into the public JavaScript bundle and used purely as UX sugar (pre-filling the login form). Anyone visiting the site can read it, and by itself it restricts nothing. Actual access control is the Firestore rule matching that exact email address (below) — combined with sign-up being disabled so nobody else can ever create an account holding that email.
 
@@ -117,7 +117,7 @@ npm install
 npm run build
 ```
 
-The output will be generated in the `build/` directory, ready to be deployed to Cloudflare Pages.
+The output will be generated in the `build/` directory, ready to be deployed to Cloudflare Workers (`pnpm run deploy`).
 
 ## Backups
 

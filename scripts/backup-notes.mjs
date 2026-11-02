@@ -55,6 +55,23 @@ export function resolveCredential(env = process.env) {
   );
 }
 
+export const DEFAULT_PROJECT_ID = "toin-notes";
+
+export function buildAppOptions(credential, env = process.env) {
+  const projectId =
+    env.FIREBASE_PROJECT_ID ||
+    env.GOOGLE_CLOUD_PROJECT ||
+    env.GCLOUD_PROJECT ||
+    credential?.project_id ||
+    DEFAULT_PROJECT_ID;
+
+  const options = { projectId };
+  if (credential) {
+    options.credential = credential;
+  }
+  return options;
+}
+
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
 
@@ -62,10 +79,11 @@ async function main() {
   const { initializeApp, cert } = await import("firebase-admin/app");
   const firestore = await import("firebase-admin/firestore");
 
+  const options = buildAppOptions(credential);
   const app = initializeApp(
-    credential
-      ? { credential: cert(credential), projectId: "toin-notes" }
-      : { projectId: "toin-notes" }
+    options.credential
+      ? { ...options, credential: cert(options.credential) }
+      : options
   );
   const db = firestore.getFirestore(app);
 
