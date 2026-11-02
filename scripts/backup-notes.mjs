@@ -63,7 +63,9 @@ async function main() {
   const firestore = await import("firebase-admin/firestore");
 
   const app = initializeApp(
-    credential ? { credential: cert(credential) } : {}
+    credential
+      ? { credential: cert(credential), projectId: "toin-notes" }
+      : { projectId: "toin-notes" }
   );
   const db = firestore.getFirestore(app);
 
