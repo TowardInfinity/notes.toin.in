@@ -3,10 +3,10 @@
 Markdown notes web app. React + Vite frontend with Firebase backend (Firestore + rules in repo), hosted on Cloudflare Pages.
 
 ## Commands
-- `npm start` — Vite dev server
-- `npm run build` — `tsc && vite build`
-- `npm test` — vitest suite (jsdom + Testing Library)
-- `npm run preview` — preview the build
+- `pnpm start` — Vite dev server
+- `pnpm run build` — `tsc && vite build`
+- `pnpm test` — vitest suite (jsdom + Testing Library)
+- `pnpm run preview` — preview the build
 
 ## Layout
 - `src/` — React + TypeScript app; markdown editing via `@uiw/react-md-editor`, math via remark-math/rehype-katex (sanitized before KaTeX), UI via Ant Design
@@ -15,6 +15,6 @@ Markdown notes web app. React + Vite frontend with Firebase backend (Firestore +
 - `.github/workflows/backup.yml` — monthly scheduled Firestore backup, encrypted with age before upload
 
 ## Notes
-- Tests run under vitest via `npm test`.
+- Tests run under vitest via `pnpm test`.
 - Changing Firestore document shapes requires matching updates to `firestore.rules`.
 - Editing a note patches only `note.body`; `id`, `title`, and `noteType` are fixed at creation.

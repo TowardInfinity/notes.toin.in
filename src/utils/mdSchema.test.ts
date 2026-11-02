@@ -16,7 +16,8 @@ describe("mdSanitizeSchema", () => {
 
   it("adds exactly the three math classes beyond defaults", () => {
     const defaultStar = (defaultSchema.attributes?.["*"] ?? []).filter(
-      (attr) => Array.isArray(attr) && attr[0] === "className",
+      (attr: unknown): attr is [string, ...string[]] =>
+        Array.isArray(attr) && attr[0] === "className",
     );
     const star = mdSanitizeSchema.attributes?.["*"] ?? [];
     const classNames = star.filter(
