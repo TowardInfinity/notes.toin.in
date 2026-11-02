@@ -7,6 +7,7 @@ Markdown notes web app. React + Vite frontend with Firebase backend (Firestore +
 - `pnpm run build` — `tsc && vite build`
 - `pnpm test` — vitest suite (jsdom + Testing Library)
 - `pnpm run preview` — preview the build
+- `pnpm run deploy` — build and deploy to Cloudflare (`wrangler deploy`)
 
 ## Layout
 - `src/` — React + TypeScript app; markdown editing via `@uiw/react-md-editor`, math via remark-math/rehype-katex (sanitized before KaTeX), UI via Ant Design
