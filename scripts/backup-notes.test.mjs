@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { backupFilename, resolveCredential } from "./backup-notes.mjs";
+import {
+  backupFilename,
+  buildAppOptions,
+  DEFAULT_PROJECT_ID,
+  resolveCredential,
+} from "./backup-notes.mjs";
 
 describe("backupFilename", () => {
   it("formats a dated notes-YYYY-MM-DD.json name in UTC", () => {
@@ -44,5 +49,46 @@ describe("resolveCredential", () => {
     expect(() =>
       resolveCredential({ FIREBASE_SERVICE_ACCOUNT: "{not json" })
     ).toThrow(/not valid JSON/);
+  });
+});
+
+describe("buildAppOptions", () => {
+  it("extracts projectId from service account JSON if present", () => {
+    const sa = { project_id: "custom-project", client_email: "test@example.com" };
+    const options = buildAppOptions(sa, {});
+    expect(options).toEqual({
+      projectId: "custom-project",
+      credential: sa,
+    });
+  });
+
+  it("prioritizes FIREBASE_PROJECT_ID environment variable", () => {
+    const options = buildAppOptions(null, { FIREBASE_PROJECT_ID: "override-project" });
+    expect(options).toEqual({
+      projectId: "override-project",
+    });
+  });
+
+  it("prioritizes GOOGLE_CLOUD_PROJECT environment variable", () => {
+    const options = buildAppOptions(null, { GOOGLE_CLOUD_PROJECT: "gcp-project" });
+    expect(options).toEqual({
+      projectId: "gcp-project",
+    });
+  });
+
+  it("falls back to DEFAULT_PROJECT_ID when no override or key project_id", () => {
+    const options = buildAppOptions(null, {});
+    expect(options).toEqual({
+      projectId: DEFAULT_PROJECT_ID,
+    });
+  });
+
+  it("attaches credential when provided without project_id", () => {
+    const sa = { client_email: "test@example.com" };
+    const options = buildAppOptions(sa, {});
+    expect(options).toEqual({
+      projectId: DEFAULT_PROJECT_ID,
+      credential: sa,
+    });
   });
 });

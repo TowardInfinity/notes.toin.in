@@ -1,17 +1,18 @@
 # notes.toin.in
 
-Markdown notes web app. React + Vite frontend with Firebase backend (Firestore + rules in repo), hosted on Cloudflare Pages.
+Markdown notes web app. React + Vite frontend with Firebase backend (Firestore + rules in repo), hosted on Cloudflare Workers (Static Assets).
 
 ## Commands
 - `pnpm start` — Vite dev server
 - `pnpm run build` — `tsc && vite build`
 - `pnpm test` — vitest suite (jsdom + Testing Library)
 - `pnpm run preview` — preview the build
+- `pnpm run deploy` — build and deploy to Cloudflare (`wrangler deploy`)
 
 ## Layout
 - `src/` — React + TypeScript app; markdown editing via `@uiw/react-md-editor`, math via remark-math/rehype-katex (sanitized before KaTeX), UI via Ant Design
 - `firebase.json`, `firestore.rules` — Firebase config and security rules; rules are email-scoped to the single owner account (review rules when changing data access)
-- Hosted on Cloudflare Pages; `build/` is output
+- Hosted on Cloudflare Workers (Static Assets); `build/` is output
 - `.github/workflows/backup.yml` — monthly scheduled Firestore backup, encrypted with age before upload
 
 ## Notes

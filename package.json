@@ -30,7 +30,8 @@
     "test": "vitest run",
     "backup": "node scripts/backup-notes.mjs",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "pnpm run build && wrangler deploy"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
@@ -42,6 +43,7 @@
     "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "4.156.2"
   }
 }

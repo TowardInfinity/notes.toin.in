@@ -1,9 +1,20 @@
 allowBuilds:
   '@firebase/util': false
   protobufjs: false
+  # Required by devDependency wrangler for asset bundling and local worker runtime
+  esbuild: true
+  workerd: true
 minimumReleaseAgeExclude:
   - '@uiw/react-md-editor@4.2.2'
   - '@vitejs/plugin-react@6.2.1'
+  - '@cloudflare/workerd-darwin-64@1.20261102.1'
+  - '@cloudflare/workerd-darwin-arm64@1.20261102.1'
+  - '@cloudflare/workerd-linux-64@1.20261102.1'
+  - '@cloudflare/workerd-linux-arm64@1.20261102.1'
+  - '@cloudflare/workerd-windows-64@1.20261102.1'
+  - miniflare@5.20261102.0-beta
+  - workerd@1.20261102.1
+  - wrangler@4.156.2
 overrides:
   '@grpc/grpc-js': ^1.13.6
   minimatch: ^11.0.1
